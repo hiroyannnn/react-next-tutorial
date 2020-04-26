@@ -1,50 +1,74 @@
-import React,{Component} from 'react';
-import Rect from './Rect'
+import React, {Component} from 'react';
+import {connect} from 'react-redux'
 import './App.css';
 
-let data = {title:'Title',
-message: 'this is sample message.'}
-const SampleContext = React.createContext(data)
+// stateのマッピング
+function mappingState(state){
+  return state
+}
 
 class App extends Component {
-  newdata = {title:'新しいタイトル',
-    message:'これは新しいメッセージです。'}
-
+  constructor(props){
+    super(props)
+  }
   render (){
-    return <div>
-      <h1>Context</h1>
-      <Title />
-      <Message />
-      <SampleContext.Provider value={this.newdata}>
-        <Title />
+    return (
+      <div>
+        <h1>Redux</h1>
         <Message />
-      </SampleContext.Provider>
-      <Title />
-      <Message />
-    </div>
-  }
-}
-
-class Title extends Component {
-  static contextType = SampleContext
-  render(){
-    return (
-      <div>
-        <h2>{this.context.title}</h2>
+        <Button />
       </div>
     )
   }
 }
+// store の connect
+App = connect()(App)
+
+// message
 class Message extends Component {
-  static contextType = SampleContext
+  style={
+    fontSize:"20pt",
+    padding:"20px 5px"
+  }
 
   render(){
     return (
-      <div>
-        <p>{this.context.message}</p>
-      </div>
+      <p style={this.style}>
+        {this.props.message}: {this.props.counter}
+      </p>
     )
   }
 }
+// store の connect
+Message = connect(mappingState)(Message)
+
+// button
+class Button extends Component {
+  style={
+    fontSize:"16pt",
+    padding:"5px 10px"
+  }
+  constructor(props){
+    super(props)
+    this.doAction = this.doAction.bind(this)
+  }
+  doAction(e){
+    if (e.shiftKey) {
+      this.props.dispatch({type:'DECREMENT'})
+    }else{
+      this.props.dispatch({type:'INCREMENT'})
+    }
+  }
+  render(){
+    return (
+      <button style={this.style}
+        onClick={this.doAction}>
+        click
+      </button>
+    )
+  }
+}
+// store の connect
+Button = connect()(Button)
 
 export default App;
